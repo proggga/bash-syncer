@@ -10,7 +10,7 @@ function mysync {
             time rsync -v -e "ssh -p12222 -o 'ControlPath=$HOME/.ssh/ctl/%L-%r@%h:%p'" $line progga@trall.tk:~/tmp/$line;
         done;
     else
-        rsync -arpvzP -e "ssh -p12222 -o 'ControlPath=$HOME/.ssh/ctl/%L-%r@%h:%p'" . --delete progga@trall.tk:~/tmp;
+        time rsync -arpvzP -e "ssh -p12222 -o 'ControlPath=$HOME/.ssh/ctl/%L-%r@%h:%p'" . --delete progga@trall.tk:~/tmp;
     fi;
 }
 while :;
