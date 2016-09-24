@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
+rsync_comm=rsync
+ssh_comm=rsync
+name=$(uname)
+if [ "$uname" != "Linux" ] && [ "$uname" != "FreeBSD" ] ; then
+	rsync_comm=$(find /c/Program\ Files* -name rsync.exe -type f|head -1 |sed 's/rsync.exe$//g')
+	ln -s "$rsync_comm" ../bin
+	rsync_comm=../bin/rsync.exe
+	ssh_comm=../bin/ssh.exe
+fi;
+echo $rsync_comm;
 last_changed="";
 last_md5sum="";
-ssh -nNf -p12222 -o ControlMaster=yes -o ControlPath="$HOME/.ssh/ctl/%L-%r@%h:%p" progga@trall.tk
+$ssh_comm -nNf -p12222 -o ControlMaster=yes -o ControlPath="\"$HOME/.ssh/ctl/%L-%r@%h:%p\"" progga@trall.tk
+STRHOME=$(echo $HOME)
+
 echo "aaa"
 function mysync {
     if [ "$1" ] ; then
         echo "$1" | while read line ; do
-            echo rsync $line;
-            time rsync -v -e "ssh -p12222 -o 'ControlPath=$HOME/.ssh/ctl/%L-%r@%h:%p'" $line progga@trall.tk:~/tmp/$line;
+            echo "$rsync_comm" $line;
+            time "$rsync_comm -v -e '$ssh_comm -p12222 -o 'ControlPath="$HOME"/.ssh/ctl/%L-%r@%h:%p' $line progga@trall.tk:~/tmp/$line";
         done;
     else
-        rsync -arpvzP -e "ssh -p12222 -o 'ControlPath=$HOME/.ssh/ctl/%L-%r@%h:%p'" . --delete progga@trall.tk:~/tmp;
+         echo "$rsync_comm" -arpvzP --delete -e "\"$ssh_comm -p12222 -o 'ControlPath="$STRHOME"/.ssh/ctl/%L-%r@%h:%p'\"" . progga@trall.tk:~/tmp/$line;
+         "$rsync_comm" -arpvzP --delete -e ''$ssh_comm' -p12222 -o "ControlPath=\"'$STRHOME'/.ssh/ctl/%L-%r@%h:%p\""' . progga@trall.tk:~/tmp/$line;
     fi;
 }
 while :;
@@ -38,4 +51,4 @@ do
     sleep 0.1;
 done;
 
-ssh -O exit remote
+$ssh_comm -O exit remote
