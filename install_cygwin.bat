@@ -6,7 +6,7 @@ set URL=https://cygwin.com/setup-x%OS%.exe
 set CYGWIN=%TEMP%\cygwin_installer.exe
 set TERMINAL=C:\cygwin64\bin\mintty.exe
 if not exist %CYGWIN% bitsadmin /Transfer downloadcygwinjob %URL% %CYGWIN%
-if not exist %TERMINAL% %CYGWIN% --quiet-mode --packages rsync,openssh,git,vim,nano,mc
+if not exist %TERMINAL% %CYGWIN% --quiet-mode --packages rsync,openssh,git,nano,mc
 set str=%~dp0
 call set str=%%str:\=/%%
 call set str=%%str::=%%
