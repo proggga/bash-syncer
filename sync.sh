@@ -1,34 +1,47 @@
 #!/usr/bin/env bash
+
+# IMPORT main functions from methods.sh
+. methods.sh
+# list of methods:
+# raise_error (string) :: method print message to screen and exit with state 2
+
 # settings
-login=progga;
-server=trall.tk;
+. settings.conf
+
+# working directory
+localdir=$1
+if [ -z "$1" ] ; then
+    read -e -p "Please input directory of project: " localdir;
+    localdir=$(echo $localdir | sed "s|~|$HOME|g")
+fi;
+if [ -z "$localdir" ] ; then
+    raise_error "You should define directory to work";
+fi;
+if [ ! -d "$localdir" ] ; then raise_error "Directory does not exists"; fi;
 
 # connection
 last_changed="";
 last_md5sum="";
-ssh -nNf -p12222 -o ControlMaster=yes -o ControlPath="\"$HOME/.ssh/ctl/%L-%r@%h_%p\"" $login@$server
-STRHOME=$(echo $HOME)
 
-function syncing_cycle {
-    if [ "$1" ] ; then
-        echo "$1" | while read line ; do
-            time rsync -arpvzP --delete -e 'ssh -p12222 -o ControlPath="'$STRHOME'/.ssh/ctl/%L-%r@%h_%p"' $line progga@trall.tk:~/tmp/;
-        done;
-    else
-         rsync -arpvzP --delete -e 'ssh -p12222 -o ControlPath="'$STRHOME'/.ssh/ctl/%L-%r@%h_%p"' . progga@trall.tk:~/tmp/;
-    fi;
-}
+# check catalog existance (for ssh tunnel)
+#if [ ! -d "$HOME/.ssh/ctl" ] ; then
+#    mkdir -p "$HOME/.ssh/ctl";
+#fi;
+
+# Ssh tullel works only at linux)
+#ssh -nNf -p12222 -o ControlMaster=yes -o ControlPath="\"$HOME/.ssh/ctl/%L-%r@%h_%p\"" $login@$server
+
 
 while :;
 do
     rm /tmp/newerthan;
     touch -d '-0.2 seconds' /tmp/newerthan;
     changed="";
-    filelist=$(find . -type f ! -path . -newer /tmp/newerthan 2>/dev/null);
+    filelist=$(find * -type f ! -path . -newer /tmp/newerthan 2>/dev/null);
     if [ "$filelist" ] && [ "$filelist" != "$last_changed" ]; then
         echo "changed";
         echo "$filelist";
-        last_changed=$filelist;
+        last_changed="$filelist";
         changed="true";
         syncing_cycle "$filelist";
         last_md5sum=$(find . | md5sum);
@@ -44,4 +57,5 @@ do
     sleep 0.1;
 done;
 
-ssh -p12222 -O stop -S /home/progga/.ssh/ctl/%L-%r@%h_%p progga@trall.tk
+# Ssh tunnel (Works only at linux)
+#ssh -p12222 -O stop -S "$HOME/.ssh/ctl/%L-%r@%h_%p" $login@$server
