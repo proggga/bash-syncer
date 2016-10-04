@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd $(dirname "$0")
 
 # IMPORT main functions from methods.sh
 . methods.sh
