@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd $(dirname "$0")
+cd $(dirname "$0");
 
 # IMPORT main functions from methods.sh
 . methods.sh
@@ -9,15 +9,23 @@ cd $(dirname "$0")
 
 
 # working directory
-currentdir=$(pwd)
+currentdir=$(pwd);
 
-get_directory_from_terminal $1
-cd $localdir
+is_cycle_working
+if [ -z "$SYNC_STATE" ] ; then
+    get_directory_from_terminal $1;
+    cd $localdir;
 
-syncing_cycle &
-cd $currentdir
-ssh -p$port $login@$server
+    syncing_cycle &
+    cd $currentdir;
 
-stop_syncing
+    sshconnect;
 
-press_any_key;
+    press_any_key;
+
+    stop_syncing;
+else
+    sshconnect;
+
+    press_any_key;
+fi;
