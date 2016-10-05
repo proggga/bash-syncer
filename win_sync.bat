@@ -11,4 +11,4 @@ set str=%~dp0
 call set str=%%str:\=/%%
 call set str=%%str::=%%
 echo /cygdrive/%str%/send_sshkey.sh
-%TERMINAL% -h always -e "/bin/bash" -l -i /cygdrive/%str%sync.sh
+%TERMINAL% -e "/bin/bash" -l -i /cygdrive/%str%sync.sh

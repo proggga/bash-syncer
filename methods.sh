@@ -2,9 +2,13 @@
 
 STOPFILE=/tmp/stop_it_pls
 
+press_any_key() {
+    read -n1 -r -p "Press space to continue..." key
+}
 
 raise_error() {
     echo $1;
+    press_any_key;
     exit 2;
 }
 
@@ -14,6 +18,7 @@ sync_to_remote() {
     # for ssh Tunnel
     #time rsync -arpvzP --delete -e 'ssh -p12222 -o ControlPath="'$HOME'/.ssh/ctl/%L-%r@%h_%p"' $line $login@$server:~/tmp/;
      #echo rsync -arpvzP --delete -e "ssh -p$port" . $login@$server:"$remotedir";
+     #echo; echo "rsync";
      rsync -arpvzP --delete -e "ssh -p$port" . $login@$server:"$remotedir" 2>&1 >/dev/null;
 }
 
@@ -66,7 +71,7 @@ syncing_cycle() {
         else
             touch -d '-2 seconds' /tmp/newerthan;
             more_than_2seconds=$(find /tmp/timing_cycle ! -newer /tmp/newerthan)
-            if [ "$more_than_2seconds" ] ; then sync_to_remote; touch /tmp/timing_cycle; fi;
+            if [ "$more_than_2seconds" ] ; then touch /tmp/timing_cycle; fi;
         fi;
         sleep 0.1;
     done;

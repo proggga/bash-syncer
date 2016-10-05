@@ -17,3 +17,7 @@ cd $localdir
 syncing_cycle &
 cd $currentdir
 ssh -p$port $login@$server
+
+stop_syncing
+
+press_any_key;
