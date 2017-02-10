@@ -1,5 +1,12 @@
+# script config
+STOP_FILE_PATH=/tmp/stop_it_pls
+FILE_FOR_TIME_DIFF=/tmp/old.timestamp.txt
+FILE_FOR_CYCLE_UPLOAD=/tmp/timing_cycle
+RSYNC_COMMAND=rsync
+SSH_COMMAND=ssh
+MD5_COMMAND=md5sum
 
-# settings
+# connection settings
 login=progga;
 server=trall.tk;
 port=12222;

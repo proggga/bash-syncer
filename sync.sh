@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
-cd $(dirname "$0");
+SCRIPT_COMMAND=$0
+DIR_PARAM=$1
 
-# IMPORT main functions from methods.sh
-. methods.sh
+cd $(dirname "$SCRIPT_COMMAND");
 
+source src/system.sh
 # settings
-. settings.conf
+SETTINGS_FILENAME=settings.conf
+if [ ! -f $SETTINGS_FILENAME ] ; then
+    system:raise_error "Config file '$SETTINGS_FILENAME' not found, please copy '$SETTINGS_FILENAME.example'"
+fi;
 
+source $SETTINGS_FILENAME
+source src/synchro.sh
 
 # working directory
 currentdir=$(pwd);
 
-is_cycle_working
+syncho:is_cycle_working
 if [ -z "$SYNC_STATE" ] ; then
-    get_directory_from_terminal $1;
-    cd $localdir;
-
-    syncing_cycle &
-    cd $currentdir;
-
-    sshconnect;
-
-    press_any_key;
-
-    stop_syncing;
+    syncho:get_directory_from_terminal $DIR_PARAM;
+    syncho:syncprocess $localdir $currentdir &
+    syncho:sshconnect;
+    system:press_any_key;
+    syncho:stop_syncing;
 else
-    sshconnect;
-
-    press_any_key;
+    syncho:sshconnect;
+    system:press_any_key;
 fi;
+syncho:clear_files;
