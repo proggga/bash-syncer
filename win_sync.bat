@@ -1,14 +1,15 @@
+REM GOTO:EOF
 @echo off
-cd %~dp0
-echo "%PROCESSOR_ARCHITECTURE%" | find /i "x86" > NUL && set OS=86 || set OS=86_64
-echo %OS%
+set path_to_script=%~dp0
+cd %path_to_script%
+echo "%PROCESSOR_ARCHITECTURE%" | find /i "x86" > NUL && set OS=86 && set CYG_PREFIX=cygwin || set OS=86_64 && set CYG_PREFIX=cygwin64
 set URL=https://cygwin.com/setup-x%OS%.exe
-set CYGWIN=%TEMP%\cygwin_installer.exe
-set TERMINAL=C:\cygwin64\bin\mintty.exe
-if not exist %CYGWIN% bitsadmin /Transfer downloadcygwinjob %URL% %CYGWIN%
-if not exist %TERMINAL% %CYGWIN% --quiet-mode --packages rsync,openssh,git,nano,mc
-set str=%~dp0
-call set str=%%str:\=/%%
-call set str=%%str::=%%
-echo /cygdrive/%str%/send_sshkey.sh
-%TERMINAL% -e "/bin/bash" -l -i /cygdrive/%str%sync.sh
+set CYGWIN_INSTALLER_BIN=%TEMP%\cygwin_installer.exe
+set CYGWIN_PATH=%SYSTEMDRIVE%\%CYGWINPATH%
+set TERMINAL_BIN=%CYGWIN_PATH%\bin\mintty.exe
+if not exist %CYGWIN_INSTALLER_BIN% bitsadmin /Transfer downloadcygwinjob %URL% %CYGWIN_INSTALLER_BIN%
+if not exist %TERMINAL_BIN% %CYGWIN_INSTALLER_BIN% --quiet-mode --packages rsync,openssh,git,nano,mc
+call set path_reversed_slashes=%%path_to_script:\=/%%
+call set converted_cygwin_path=/cygdrive/%%path_reversed_slashes::=%%
+echo %converted_cygwin_path%/send_sshkey.sh
+%TERMINAL_BIN% -e "/bin/bash" -l -i %converted_cygwin_path%/sync.sh
